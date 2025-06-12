@@ -1,84 +1,173 @@
-#include <iostream>
-#include "SDL/include/SDL.h"
-
-// You shouldn't really use this statement, but it's fine for small programs
-
-// You must include the command line parameters for your main function to be recognized by SDL
-int main(int argc, char** args) {
-
-    // Pointers to our window and surface
-    SDL_Surface* winSurface = NULL;
-    SDL_Window* window = NULL;
-
-    // Initialize SDL. SDL_Init will return -1 if it fails.
-    if ( SDL_Init( SDL_INIT_EVERYTHING ) < 0 ) {
-        std::cout << "Error initializing SDL: " << SDL_GetError() << std::endl;
-        getchar();
-        // End the program
-        return 1;
-    } 
-
-    // Create our window
-    window = SDL_CreateWindow( "Example", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1280, 720, SDL_WINDOW_SHOWN );
-
-    // Make sure creating the window succeeded
-    if ( !window ) {
-        std::cout << "Error creating window: " << SDL_GetError()  << std::endl;
-        getchar();
-        // End the program
-        return 1;
-    }
-
-    // Get the surface from the window
-    winSurface = SDL_GetWindowSurface( window );
-
-    // Make sure getting the surface succeeded
-    if ( !winSurface ) {
-        std::cout << "Error getting surface: " << SDL_GetError() << std::endl;
-        getchar();
-        // End the program
-        return 1;
-    }
-
-    // Fill the window with a white rectangle
-    SDL_FillRect( winSurface, NULL, SDL_MapRGB( winSurface->format, 255, 255, 255 ) );
-
-    // Update the window display
-    SDL_UpdateWindowSurface( window );
-
-    while(true)
-    {
-    SDL_Event e;
-        while (SDL_PollEvent(&e)) 
-        {
-            if(e.type == SDL_QUIT)
-            {
-                    SDL_DestroyWindow( window );
-
-                // Quit SDL
-                SDL_Quit();
-                
-                // End the program
-                return 0;
-                break;
-            }
-            // Handle events
-        }
-
-        // "Frame" logic     
-    }
+#include <SDL.h>
+#include <SDL_image.h>
+#include <stdio.h>
+#include <string>
+#include "dot.cpp"
+#include "stexture.cpp"
+#define STEXTURE_INCLUDED
+#include "common.h"
+#include "stimer.h"
 
 
-    // Put the code that is executed every "frame". 
-    // Under "frame" I mean any logic that is run every time there is no app events to process       
+//Starts up SDL and creates window
+bool init();
 
-    // Destroy the window. This will also destroy the surface
-    SDL_DestroyWindow( window );
+//Loads media
+bool loadMedia();
 
-    // Quit SDL
-    SDL_Quit();
-    
-    // End the program
-    return 0;
+//Frees media and shuts down SDL
+void close();
+
+//The window we'll be rendering to
+SDL_Window* gWindow = NULL;
+
+STexture gDotTexture;
+
+
+bool init()
+{
+	//Initialization flag
+	bool success = true;
+
+	//Initialize SDL
+	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
+	{
+		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
+		success = false;
+	}
+	else
+	{
+		//Set texture filtering to linear
+		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
+		{
+			printf( "Warning: Linear texture filtering not enabled!" );
+		}
+
+		//Create window
+		gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+		if( gWindow == NULL )
+		{
+			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+			success = false;
+		}
+		else
+		{
+			//Create vsynced renderer for window
+			gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+			if( gRenderer == NULL )
+			{
+				printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+				success = false;
+			}
+			else
+			{
+				//Initialize renderer color
+				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+
+				//Initialize PNG loading
+				int imgFlags = IMG_INIT_PNG;
+				if( !( IMG_Init( imgFlags ) & imgFlags ) )
+				{
+					printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
+					success = false;
+				}
+			}
+		}
+	}
+
+	return success;
 }
 
+bool loadMedia()
+{
+	//Loading success flag
+	bool success = true;
+
+	//Load dot texture
+	if( !gDotTexture.loadFromFile( "/img/output_example.png" ) )
+	{
+		printf( "Failed to load dot texture!\n" );
+		success = false;
+	}
+
+	return success;
+}
+
+void close()
+{
+	//Free loaded images
+	gDotTexture.free();
+
+	//Destroy window	
+	SDL_DestroyRenderer( gRenderer );
+	SDL_DestroyWindow( gWindow );
+	gWindow = NULL;
+	gRenderer = NULL;
+
+	//Quit SDL subsystems
+	IMG_Quit();
+	SDL_Quit();
+}
+
+int main( int argc, char* args[] )
+{
+	//Start up SDL and create window
+	if( !init() )
+	{
+		printf( "Failed to initialize!\n" );
+	}
+	else
+	{
+		//Load media
+		if( !loadMedia() )
+		{
+			printf( "Failed to load media!\n" );
+		}
+		else
+		{	
+			//Main loop flag
+			bool quit = false;
+
+			//Event handler
+			SDL_Event e;
+
+			//The dot that will be moving around on the screen
+			Dot dot = Dot(gDotTexture);
+
+			//While application is running
+			while( !quit )
+			{
+				//Handle events on queue
+				while( SDL_PollEvent( &e ) != 0 )
+				{
+					//User requests quit
+					if( e.type == SDL_QUIT )
+					{
+						quit = true;
+					}
+
+					//Handle input for the dot
+					dot.handleEvent( e );
+				}
+
+				//Move the dot
+				dot.move();
+
+				//Clear screen
+				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				SDL_RenderClear( gRenderer );
+
+				//Render objects
+				dot.render();
+
+				//Update screen
+				SDL_RenderPresent( gRenderer );
+			}
+		}
+	}
+
+	//Free resources and close SDL
+	close();
+
+	return 0; 
+}
