@@ -4,6 +4,7 @@
 #include <string>
 #include "player.cpp"
 #include "stexture.cpp"
+#include "bullet.cpp"  // Add bullet implementation
 #define STEXTURE_INCLUDED
 #include "common.h"
 #include "stimer.h"
@@ -22,6 +23,7 @@ void close();
 SDL_Window* gWindow = NULL;
 
 STexture gPlayerTexture;
+STexture gBulletTexture;  // Add bullet texture
 
 
 bool init()
@@ -90,6 +92,13 @@ bool loadMedia()
 		success = false;
 	}
 
+	//Load bullet texture
+	if( !gBulletTexture.loadFromFile( "/img/shot.png" ) )
+	{
+		printf( "Failed to load bullet texture!\n" );
+		success = false;
+	}
+
 	return success;
 }
 
@@ -97,6 +106,7 @@ void close()
 {
 	//Free loaded images
 	gPlayerTexture.free();
+	gBulletTexture.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
@@ -132,7 +142,7 @@ int main( int argc, char* args[] )
 			SDL_Event e;
 
 			//The player that will be moving around on the screen
-			Player player = Player(gPlayerTexture);
+			Player player = Player(gPlayerTexture, gBulletTexture);
 
 			//While application is running
 			while( !quit )
@@ -159,6 +169,9 @@ int main( int argc, char* args[] )
 
 				//Render objects
 				player.render();
+				
+				// Update and render bullets
+				player.updateBullets();
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );

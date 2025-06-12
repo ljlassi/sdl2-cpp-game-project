@@ -1,7 +1,8 @@
 #include "player.h"
+#include <cmath>
 
-Player::Player(STexture & gPlayerTexture)
-    : gPlayerTexture(gPlayerTexture)
+Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
+    : gPlayerTexture(gPlayerTexture), gBulletTexture(gBulletTexture)
 {
     //Initialize the offsets
     mPosX = 320; // Center of the screen
@@ -14,7 +15,7 @@ Player::Player(STexture & gPlayerTexture)
     mRot = 0.0; // Initialize rotation angle
     mRotSpeed = 0.0; // Initialize rotation speed
 
-    // No need to set the player texture reference here, already initialized in initializer list
+    mLastFireTime = 0;
 }
 
 void Player::move()
@@ -73,6 +74,7 @@ void Player::handleEvent( SDL_Event& e )
             case SDLK_RIGHT: mVelX += PLAYER_VEL; break;
             case SDLK_a: mRot -= PLAYER_ROTATE_SPEED;  break;
             case SDLK_d: mRot += PLAYER_ROTATE_SPEED;  break;
+            case SDLK_SPACE: fireBullet(); break; // Fire bullet on space press
         }
     }
     //If a key was released
@@ -87,6 +89,45 @@ void Player::handleEvent( SDL_Event& e )
             case SDLK_RIGHT: mVelX -= PLAYER_VEL; break;
             case SDLK_a: mRotSpeed += PLAYER_ROTATE_SPEED;  break;
             case SDLK_d: mRotSpeed -= PLAYER_ROTATE_SPEED;  break;
+        }
+    }
+}
+
+void Player::fireBullet()
+{
+    // Check cooldown to prevent firing too rapidly
+    Uint32 currentTime = SDL_GetTicks();
+    if (currentTime - mLastFireTime > FIRE_COOLDOWN)
+    {
+        // Calculate bullet spawn position (center of the player)
+        int bulletX = mPosX + PLAYER_WIDTH / 2;
+        int bulletY = mPosY + PLAYER_HEIGHT / 2;
+
+        // Create a new bullet and add it to the vector using push_back instead of emplace_back
+        Bullet newBullet(bulletX, bulletY, mRot, gBulletTexture);
+        mBullets.push_back(newBullet);
+        
+        // Update last fire time
+        mLastFireTime = currentTime;
+    }
+}
+
+void Player::updateBullets()
+{
+    // Move all bullets and remove those that go off-screen
+    for (int i = 0; i < mBullets.size(); i++)
+    {
+        mBullets[i].move();
+        
+        // If bullet is off-screen, remove it from the vector
+        if (mBullets[i].isOffScreen())
+        {
+            mBullets.erase(mBullets.begin() + i);
+            i--; // Adjust index after erasing
+        }
+        else
+        {
+            mBullets[i].render();
         }
     }
 }
