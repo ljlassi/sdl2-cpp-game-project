@@ -2,7 +2,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
-#include "dot.cpp"
+#include "player.cpp"
 #include "stexture.cpp"
 #define STEXTURE_INCLUDED
 #include "common.h"
@@ -21,7 +21,7 @@ void close();
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
 
-STexture gDotTexture;
+STexture gPlayerTexture;
 
 
 bool init()
@@ -83,10 +83,10 @@ bool loadMedia()
 	//Loading success flag
 	bool success = true;
 
-	//Load dot texture
-	if( !gDotTexture.loadFromFile( "/img/output_example.png" ) )
+	//Load player texture
+	if( !gPlayerTexture.loadFromFile( "/img/player.png" ) )
 	{
-		printf( "Failed to load dot texture!\n" );
+		printf( "Failed to load player texture!\n" );
 		success = false;
 	}
 
@@ -96,7 +96,7 @@ bool loadMedia()
 void close()
 {
 	//Free loaded images
-	gDotTexture.free();
+	gPlayerTexture.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
@@ -131,8 +131,8 @@ int main( int argc, char* args[] )
 			//Event handler
 			SDL_Event e;
 
-			//The dot that will be moving around on the screen
-			Dot dot = Dot(gDotTexture);
+			//The player that will be moving around on the screen
+			Player player = Player(gPlayerTexture);
 
 			//While application is running
 			while( !quit )
@@ -146,19 +146,19 @@ int main( int argc, char* args[] )
 						quit = true;
 					}
 
-					//Handle input for the dot
-					dot.handleEvent( e );
+					//Handle input for the player
+					player.handleEvent( e );
 				}
 
-				//Move the dot
-				dot.move();
+				//Move the player
+				player.move();
 
 				//Clear screen
 				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 				SDL_RenderClear( gRenderer );
 
 				//Render objects
-				dot.render();
+				player.render();
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );

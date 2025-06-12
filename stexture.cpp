@@ -3,7 +3,7 @@
 #include "stexture.h"
 #endif
 
-//STexture gDotTexture;
+//STexture gPlayerTexture;
 SDL_Renderer* gRenderer = NULL;
 
 bool STexture::loadFromFile( std::string path )
