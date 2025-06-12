@@ -11,6 +11,9 @@ Player::Player(STexture & gPlayerTexture)
     mVelX = 0;
     mVelY = 0;
 
+    mRot = 0.0; // Initialize rotation angle
+    mRotSpeed = 0.0; // Initialize rotation speed
+
     // No need to set the player texture reference here, already initialized in initializer list
 }
 
@@ -18,7 +21,15 @@ void Player::move()
 {
     //Move the player left or right
     mPosX += mVelX;
-
+    mRot += mRotSpeed; // Adjust rotation based on horizontal velocity
+    //mRot = fmod(mRot, 360.0); // Keep rotation within 0-360 degrees
+    if (mRot < 0) {
+        mRot += 360.0; // Adjust negative angles to positive
+    }
+    // If the player is rotating, ensure the rotation angle stays within bounds
+    if (mRot >= 360.0) {
+        mRot -= 360.0; // Wrap around if it exceeds 360 degrees
+    }
     //If the player went too far to the left or right
     if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > SCREEN_WIDTH ) )
     {
@@ -40,7 +51,12 @@ void Player::move()
 void Player::render()
 {
     //Show the player
-	gPlayerTexture.render( mPosX, mPosY );
+	gPlayerTexture.render( mPosX, mPosY, nullptr, mRot, nullptr, SDL_FLIP_NONE );
+
+    // Optionally, you can render a rectangle around the player for debugging
+    // SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 255);
+    // SDL_Rect rect = { mPosX, mPosY, PLAYER_WIDTH, PLAYER_HEIGHT };
+    // SDL_RenderDrawRect(gRenderer, &rect);
 }
 
 void Player::handleEvent( SDL_Event& e )
@@ -55,6 +71,8 @@ void Player::handleEvent( SDL_Event& e )
             case SDLK_DOWN: mVelY += PLAYER_VEL; break;
             case SDLK_LEFT: mVelX -= PLAYER_VEL; break;
             case SDLK_RIGHT: mVelX += PLAYER_VEL; break;
+            case SDLK_a: mRot -= PLAYER_ROTATE_SPEED;  break;
+            case SDLK_d: mRot += PLAYER_ROTATE_SPEED;  break;
         }
     }
     //If a key was released
@@ -67,6 +85,8 @@ void Player::handleEvent( SDL_Event& e )
             case SDLK_DOWN: mVelY -= PLAYER_VEL; break;
             case SDLK_LEFT: mVelX += PLAYER_VEL; break;
             case SDLK_RIGHT: mVelX -= PLAYER_VEL; break;
+            case SDLK_a: mRotSpeed += PLAYER_ROTATE_SPEED;  break;
+            case SDLK_d: mRotSpeed -= PLAYER_ROTATE_SPEED;  break;
         }
     }
 }

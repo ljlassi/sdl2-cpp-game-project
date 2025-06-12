@@ -18,7 +18,7 @@ class Player
 
 		//Maximum axis velocity of the player
 		static const int PLAYER_VEL = 10;
-		static const int PLAYER_ROTATE_SPEED = 10;
+		static const int PLAYER_ROTATE_SPEED = 3;
 
 		//Initializes the variables
 		Player(STexture & gPlayerTexture);
@@ -38,6 +38,10 @@ class Player
 
 		//The velocity of the player
 		int mVelX, mVelY;
+
+		double mRot; // Rotation angle of the player
+
+		double mRotSpeed; // Current speed of rotation
 
 		STexture &gPlayerTexture;
 };
