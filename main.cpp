@@ -9,16 +9,12 @@
 #include "enemy.cpp"
 
 
-//Starts up SDL and creates window
-bool init();
+bool initGame();
 
-//Loads media
-bool loadMedia();
+bool loaGameMedia();
 
-//Frees media and shuts down SDL
-void close();
+void closeGame();
 
-//The window we'll be rendering to
 SDL_Window* gWindow = NULL;
 
 STexture gPlayerTexture;
@@ -26,12 +22,12 @@ STexture gBulletTexture;  // Add bullet texture
 STexture gEnemyTexture;  // Add enemy texture
 
 
-bool init()
+bool initGane()
 {
-	//Initialization flag
+	//Init flag
 	bool success = true;
 
-	//Initialize SDL
+	//Init SDL
 	if( SDL_Init( SDL_INIT_VIDEO ) < 0 )
 	{
 		printf( "SDL could not initialize! SDL Error: %s\n", SDL_GetError() );
@@ -39,38 +35,38 @@ bool init()
 	}
 	else
 	{
-		//Set texture filtering to linear
+		// Use linear texture filtering
 		if( !SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" ) )
 		{
-			printf( "Warning: Linear texture filtering not enabled!" );
+			printf( "Warning: Linear texture filtering could not be enabled!" );
 		}
 
-		//Create window
+		// Create and open window
 		gWindow = SDL_CreateWindow( "Shooter Game Prototype", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
 		if( gWindow == NULL )
 		{
-			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
+			printf( "Window cannot be created! SDL Error: %s\n", SDL_GetError() );
 			success = false;
 		}
 		else
 		{
-			//Create vsynced renderer for window
+			// Set Vsync on
 			mRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
 			if( mRenderer == NULL )
 			{
-				printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
+				printf( "Renderer cannot be created! SDL Error: %s\n", SDL_GetError() );
 				success = false;
 			}
 			else
 			{
-				//Initialize renderer color
+				//Initialize colors for renderer
 				SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
 				//Initialize PNG loading
 				int imgFlags = IMG_INIT_PNG;
 				if( !( IMG_Init( imgFlags ) & imgFlags ) )
 				{
-					printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
+					printf( "SDL_image wasn't able to initialize! SDL_image Error: %s\n", IMG_GetError() );
 					success = false;
 				}
 			}
@@ -80,12 +76,12 @@ bool init()
 	return success;
 }
 
-bool loadMedia()
+bool loadGameMedia()
 {
-	//Loading success flag
+	// Whether media loading was successful
 	bool success = true;
 
-	//Load player texture
+	// Load player texture
 	if( !gPlayerTexture.loadFromFile( "/img/player.png" ) )
 	{
 		printf( "Failed to load player texture!\n" );
@@ -99,6 +95,7 @@ bool loadMedia()
 		success = false;
 	}
 
+	// Load enemy texture
 	if( !gEnemyTexture.loadFromFile( "/img/enemy_rectangle.png" ) )
 	{
 		printf( "Failed to load enemy texture!\n" );
@@ -108,49 +105,50 @@ bool loadMedia()
 	return success;
 }
 
-void close()
+void closeGame()
 {
-	//Free loaded images
+	//Free the textures
 	gPlayerTexture.free();
 	gBulletTexture.free();
 	gEnemyTexture.free();
 
-	//Destroy window	
+	//Destroy the window
 	SDL_DestroyRenderer( mRenderer );
 	SDL_DestroyWindow( gWindow );
 	gWindow = NULL;
 	mRenderer = NULL;
 
-	//Quit SDL subsystems
+	// Quit all used SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
 }
 
 int main( int argc, char* args[] )
 {
-	//Start up SDL and create window
-	if( !init() )
+	// Init SDL and create the window
+	if( !initGame() )
 	{
-		printf( "Failed to initialize!\n" );
+		printf( "Something went wrong: Failed to initialize!\n" );
 	}
 	else
 	{
 		//Load media
-		if( !loadMedia() )
+		if( !loaGameMedia() )
 		{
-			printf( "Failed to load media!\n" );
+			printf("Something went wrong: Failed to load media!\n" );
 		}
 		else
 		{	
-			//Main loop flag
+			// Flag for main loop
 			bool quit = false;
 
-			//Event handler
+			// Handle events
 			SDL_Event e;
 
-			//The player that will be moving around on the screen
+			// Create player and enemy objects
+			// Player uses the player texture and bullet texture
+			// Enemy uses the enemy texture
 			Player player = Player(gPlayerTexture, gBulletTexture);
-
 			Enemy enemy = Enemy(100, 100, gEnemyTexture); // Create an enemy at position (100, 100)
 			enemy.spawn(100, 100); // Spawn the enemy at its initial position
 
@@ -158,7 +156,7 @@ int main( int argc, char* args[] )
             Uint32 lastFrameTime = SDL_GetTicks();
             float deltaTime = 0.0f;
 
-			//While application is running
+			// The game loop itself
 			while( !quit )
 			{
 
@@ -172,10 +170,10 @@ int main( int argc, char* args[] )
                     deltaTime = 0.1f;
                 }
 
-				//Handle events on queue
+				// Poll event queue
 				while( SDL_PollEvent( &e ) != 0 )
 				{
-					//User requests quit
+					// Quit event, by user request
 					if( e.type == SDL_QUIT )
 					{
 						quit = true;
@@ -185,7 +183,7 @@ int main( int argc, char* args[] )
 					player.handleEvent( e );
 				}
 
-				//Move the player
+				// Make the player move
 				player.move(deltaTime);
 
 				if (enemy.getHealth() > 0) // Only move enemy if it's alive
@@ -196,8 +194,6 @@ int main( int argc, char* args[] )
 				if (enemy.getHealth() > 0 && player.getHealth() > 0) {
                     if (checkCollision(player.getBoundingBox(), enemy.getBoundingBox())) {
                         player.takeDamage(enemy.getAttackPower()); // Player takes damage
-                        // Optional: Add a small knockback or temporary invincibility for player
-                        // Optional: Enemy could also take some minor damage or be knocked back
                         printf("Player hit by enemy! Player health: %d\n", player.getHealth());
                     }
                 }
@@ -225,17 +221,15 @@ int main( int argc, char* args[] )
                 // --- End Collision Detection ---
 
 
-				//Clear screen
+				//Clear the screen
 				SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 				SDL_RenderClear( mRenderer );
 
-				//Render objects
+				//Render the actual objects
                 if (player.getHealth() > 0) { // Only render player if alive
                     player.render();
                 } else {
-                    // Optional: Display game over message
                     printf("Game Over - Player defeated!\n");
-                    // quit = true; // Or handle game over state differently
                 }
 				
 				// Update and render bullets
@@ -245,11 +239,10 @@ int main( int argc, char* args[] )
 				// Move the enemy
 				enemy.move(deltaTime, player.getPosX(), player.getPosY());
 
-				//Update screen
+				//Update the screen
 				SDL_RenderPresent( mRenderer );
 
 				if (player.getHealth() <= 0) {
-                     // Optional: Add a delay or specific game over screen before quitting
                     SDL_Delay(2000); // Wait 2 seconds
                     quit = true;
                 }
@@ -257,8 +250,8 @@ int main( int argc, char* args[] )
 		}
 	}
 
-	//Free resources and close SDL
-	close();
+	//Free the resources and close SDL
+	closeGame();
 
 	return 0; 
 }
