@@ -5,8 +5,11 @@ Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
     : gPlayerTexture(gPlayerTexture), gBulletTexture(gBulletTexture)
 {
     //Initialize the offsets
-    mPosX = 320; // Center of the screen
-    mPosY = 320; // Center of the screen
+    // mPosX = 320; // Center of the screen
+    // mPosY = 320; // Center of the screen
+
+    mPosX = SCREEN_WIDTH / 2.0f; 
+    mPosY = SCREEN_HEIGHT / 2.0f;
 
     //Initialize the velocity
     mVelX = 0;
@@ -16,36 +19,46 @@ Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
     mRotSpeed = 0.0; // Initialize rotation speed
 
     mLastFireTime = 0;
+
+    gBulletTexture = gBulletTexture; // Initialize bullet texture
 }
 
-void Player::move()
+void Player::move(float deltaTime) // Added deltaTime parameter
 {
-    //Move the player left or right
-    mPosX += mVelX;
-    mRot += mRotSpeed; // Adjust rotation based on horizontal velocity
-    //mRot = fmod(mRot, 360.0); // Keep rotation within 0-360 degrees
-    if (mRot < 0) {
-        mRot += 360.0; // Adjust negative angles to positive
-    }
-    // If the player is rotating, ensure the rotation angle stays within bounds
-    if (mRot >= 360.0) {
-        mRot -= 360.0; // Wrap around if it exceeds 360 degrees
-    }
-    //If the player went too far to the left or right
-    if( ( mPosX < 0 ) || ( mPosX + PLAYER_WIDTH > SCREEN_WIDTH ) )
-    {
-        //Move back
-        mPosX -= mVelX;
+    //Update rotation based on rotation speed and time
+    mRot += mRotSpeed * deltaTime; 
+
+    // Normalize rotation angle
+    if (mRot < 0.0) {
+        mRot += 360.0; 
+    } else if (mRot >= 360.0) {
+        mRot -= 360.0; 
     }
 
-    //Move the player up or down
-    mPosY += mVelY;
+    //Move the player left or right based on velocity and time
+    mPosX += mVelX * deltaTime;
 
-    //If the player went too far up or down
-    if( ( mPosY < 0 ) || ( mPosY + PLAYER_HEIGHT > SCREEN_HEIGHT ) )
+    //If the player went too far to the left or right, clamp position
+    if( mPosX < 0 )
     {
-        //Move back
-        mPosY -= mVelY;
+        mPosX = 0;
+    }
+    else if( mPosX + PLAYER_WIDTH > SCREEN_WIDTH )
+    {
+        mPosX = SCREEN_WIDTH - PLAYER_WIDTH;
+    }
+
+    //Move the player up or down based on velocity and time
+    mPosY += mVelY * deltaTime;
+
+    //If the player went too far up or down, clamp position
+    if( mPosY < 0 )
+    {
+        mPosY = 0;
+    }
+    else if( mPosY + PLAYER_HEIGHT > SCREEN_HEIGHT )
+    {
+        mPosY = SCREEN_HEIGHT - PLAYER_HEIGHT;
     }
 }
 
@@ -87,8 +100,9 @@ void Player::handleEvent( SDL_Event& e )
             case SDLK_DOWN: mVelY -= PLAYER_VEL; break;
             case SDLK_LEFT: mVelX += PLAYER_VEL; break;
             case SDLK_RIGHT: mVelX -= PLAYER_VEL; break;
-            case SDLK_a: mRotSpeed += PLAYER_ROTATE_SPEED;  break;
-            case SDLK_d: mRotSpeed -= PLAYER_ROTATE_SPEED;  break;
+            // Reset mRotSpeed if the corresponding key is released
+            case SDLK_a: if( mRotSpeed < 0.0f ) mRotSpeed = 0.0f; else mRotSpeed += PLAYER_ROTATE_SPEED; break;
+            case SDLK_d: if( mRotSpeed > 0.0f ) mRotSpeed = 0.0f; else mRotSpeed -= PLAYER_ROTATE_SPEED; break;
         }
     }
 }
@@ -112,12 +126,12 @@ void Player::fireBullet()
     }
 }
 
-void Player::updateBullets()
+void Player::updateBullets(float deltaTime) // Added deltaTime parameter
 {
     // Move all bullets and remove those that go off-screen
-    for (int i = 0; i < mBullets.size(); i++)
+    for (int i = 0; i < mBullets.size(); i++) // Use size_t for loop counter with mBullets.size()
     {
-        mBullets[i].move();
+        mBullets[i].move(deltaTime); // Pass deltaTime to bullet's move method
         
         // If bullet is off-screen, remove it from the vector
         if (mBullets[i].isOffScreen())

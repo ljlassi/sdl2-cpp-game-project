@@ -4,10 +4,15 @@
 #include <string>
 #include "player.cpp"
 #include "stexture.cpp"
-#include "bullet.cpp"  // Add bullet implementation
 #define STEXTURE_INCLUDED
+#include "bullet.cpp"
+#define BULLET_INCLUDED
+#ifndef COMMON_INCLUDED
+#define COMMON_INCLUDED
 #include "common.h"
-#include "stimer.h"
+#endif
+#include "stimer.cpp"
+#define STIMER_INCLUDED
 
 
 //Starts up SDL and creates window
@@ -144,9 +149,24 @@ int main( int argc, char* args[] )
 			//The player that will be moving around on the screen
 			Player player = Player(gPlayerTexture, gBulletTexture);
 
+			//Time management for delta time calculation
+            Uint32 lastFrameTime = SDL_GetTicks();
+            float deltaTime = 0.0f;
+
 			//While application is running
 			while( !quit )
 			{
+
+				//Calculate delta time
+                Uint32 currentFrameTime = SDL_GetTicks();
+                deltaTime = (currentFrameTime - lastFrameTime) / 1000.0f; // Convert milliseconds to seconds
+                lastFrameTime = currentFrameTime;
+
+                // Cap delta time to avoid unusually large jumps if debugging or system lags
+                if (deltaTime > 0.1f) { // e.g., max 0.1 seconds per frame
+                    deltaTime = 0.1f;
+                }
+
 				//Handle events on queue
 				while( SDL_PollEvent( &e ) != 0 )
 				{
@@ -161,7 +181,7 @@ int main( int argc, char* args[] )
 				}
 
 				//Move the player
-				player.move();
+				player.move(deltaTime);
 
 				//Clear screen
 				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
@@ -171,7 +191,7 @@ int main( int argc, char* args[] )
 				player.render();
 				
 				// Update and render bullets
-				player.updateBullets();
+				player.updateBullets(deltaTime);
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );

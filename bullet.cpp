@@ -1,32 +1,28 @@
 #include "bullet.h"
 #include <cmath>
 
-Bullet::Bullet(int x, int y, double angle, STexture &bulletTexture)
-    : mPosX(x), mPosY(y), mAngle(angle), mBulletTexture(bulletTexture)
+Bullet::Bullet(int x, int y, double angle, STexture& texture)
+    : mPosX(static_cast<float>(x)), mPosY(static_cast<float>(y)), mAngle(angle), gBulletTexture(texture)
 {
-    // Calculate velocity components based on angle
-    // Convert angle from degrees to radians
-    double radians = (90 - angle) * M_PI / 180.0; // Adjust for SDL's coordinate system
-    
-    mVelX = BULLET_VEL * cos(radians);
-    mVelY = -BULLET_VEL * sin(radians); // Negative because SDL Y increases downward
+    double angleRad = angle * M_PI / 180.0;
+    // BULLET_SPEED is now pixels per second
+    mVelX = BULLET_SPEED * static_cast<float>(cos(angleRad));
+    mVelY = BULLET_SPEED * static_cast<float>(sin(angleRad));
+    gBulletTexture = texture; // Initialize the bullet texture
 }
 
-void Bullet::move()
+void Bullet::move(float deltaTime) // Added deltaTime parameter
 {
-    // Move based on velocity components
-    mPosX += mVelX;
-    mPosY += mVelY;
+    mPosX += mVelX * deltaTime;
+    mPosY += mVelY * deltaTime;
 }
 
 void Bullet::render()
 {
-    // Render the bullet with its angle
-    mBulletTexture.render(mPosX - BULLET_WIDTH/2, mPosY - BULLET_HEIGHT/2, nullptr, mAngle, nullptr, SDL_FLIP_NONE);
+    gBulletTexture.render(static_cast<int>(mPosX), static_cast<int>(mPosY));
 }
 
 bool Bullet::isOffScreen()
 {
-    return (mPosX < -BULLET_WIDTH || mPosX > SCREEN_WIDTH || 
-            mPosY < -BULLET_HEIGHT || mPosY > SCREEN_HEIGHT);
+    return (mPosX < 0 || mPosX > SCREEN_WIDTH || mPosY < 0 || mPosY > SCREEN_HEIGHT);
 }
