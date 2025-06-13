@@ -3,18 +3,11 @@
 #include <stdio.h>
 #include <string>
 #include "stexture.cpp"
-#define STEXTURE_INCLUDED
 #include "player.cpp"
-#define PLAYER_INCLUDED
 #include "bullet.cpp"
-#define BULLET_INCLUDED
-#ifndef COMMON_INCLUDED
-#define COMMON_INCLUDED
 #include "common.h"
-#endif
 #include "stimer.cpp"
 #include "enemy.cpp"
-#define ENEMY_INCLUDED
 
 
 //Starts up SDL and creates window
