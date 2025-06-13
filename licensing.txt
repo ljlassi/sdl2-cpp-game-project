@@ -1,5 +1,5 @@
 Copyright 2025 Lassi Jääskeläinen
 
-Please contact me first if you wish to directly utilize this code in another project.
+Please contact me first (email: lassi@lassijaaskelainen.fi) if you wish to directly utilize this code in another project.
 
 There is no warranty for this software and I accept no responsibility nor liability for how this software is potentially used by another person or entity.

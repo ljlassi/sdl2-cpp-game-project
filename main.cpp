@@ -11,7 +11,7 @@
 
 bool initGame();
 
-bool loaGameMedia();
+bool loadGameMedia();
 
 void closeGame();
 
@@ -22,7 +22,7 @@ STexture gBulletTexture;  // Add bullet texture
 STexture gEnemyTexture;  // Add enemy texture
 
 
-bool initGane()
+bool initGame()
 {
 	//Init flag
 	bool success = true;
@@ -133,7 +133,7 @@ int main( int argc, char* args[] )
 	else
 	{
 		//Load media
-		if( !loaGameMedia() )
+		if( !loadGameMedia() )
 		{
 			printf("Something went wrong: Failed to load media!\n" );
 		}
