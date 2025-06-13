@@ -22,6 +22,9 @@ public:
     // Check if bullet is out of screen bounds
     bool isOffScreen();
 
+    SDL_Rect getBoundingBox() const; // New: Get bullet's bounding box
+    static const int BULLET_DAMAGE = 25; // New: Damage a bullet deals
+
     static const float BULLET_SPEED = 400.0f; // Pixels per second
 
 private:

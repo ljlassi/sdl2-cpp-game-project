@@ -5,7 +5,7 @@
 #include "stexture.cpp"
 #include "player.cpp"
 #include "bullet.cpp"
-#include "common.h"
+#include "common.cpp"
 #include "stimer.cpp"
 #include "enemy.cpp"
 
@@ -189,12 +189,55 @@ int main( int argc, char* args[] )
 				//Move the player
 				player.move(deltaTime);
 
+				if (enemy.getHealth() > 0) // Only move enemy if it's alive
+                {
+                    enemy.move(deltaTime, player.getPosX(), player.getPosY());
+                }
+
+				if (enemy.getHealth() > 0 && player.getHealth() > 0) {
+                    if (checkCollision(player.getBoundingBox(), enemy.getBoundingBox())) {
+                        player.takeDamage(enemy.getAttackPower()); // Player takes damage
+                        // Optional: Add a small knockback or temporary invincibility for player
+                        // Optional: Enemy could also take some minor damage or be knocked back
+                        printf("Player hit by enemy! Player health: %d\n", player.getHealth());
+                    }
+                }
+
+                // Bullets vs Enemy
+                if (enemy.getHealth() > 0) {
+                    std::vector<Bullet>& bullets = player.getBullets(); // Need a getter for mBullets
+                    for (size_t i = 0; i < bullets.size(); ++i) {
+                        if (checkCollision(bullets[i].getBoundingBox(), enemy.getBoundingBox())) {
+                            enemy.takeDamage(Bullet::BULLET_DAMAGE);
+                            printf("Enemy hit by bullet! Enemy health: %d\n", enemy.getHealth());
+                            bullets.erase(bullets.begin() + i); // Remove bullet
+                            i--; // Adjust index after removal
+
+                            if (enemy.getHealth() <= 0) {
+                                printf("Enemy defeated!\n");
+                                // Optional: Handle enemy death (e.g., remove from a list of enemies, play sound)
+								enemy.spawn(-100, -100); // Move enemy off-screen or reset position
+                                break; // Stop checking bullets for this enemy if it's dead
+                            }
+                        }
+                    }
+                }
+                
+                // --- End Collision Detection ---
+
+
 				//Clear screen
 				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 				SDL_RenderClear( gRenderer );
 
 				//Render objects
-				player.render();
+                if (player.getHealth() > 0) { // Only render player if alive
+                    player.render();
+                } else {
+                    // Optional: Display game over message
+                    printf("Game Over - Player defeated!\n");
+                    // quit = true; // Or handle game over state differently
+                }
 				
 				// Update and render bullets
 				player.updateBullets(deltaTime);
@@ -205,6 +248,12 @@ int main( int argc, char* args[] )
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );
+
+				if (player.getHealth() <= 0) {
+                     // Optional: Add a delay or specific game over screen before quitting
+                    SDL_Delay(2000); // Wait 2 seconds
+                    quit = true;
+                }
 			}
 		}
 	}

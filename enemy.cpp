@@ -60,18 +60,27 @@ void Enemy::spawn(int x, int y)
     // Reset velocity; 'move' will calculate it based on player position
     mVelX = 0.0f;
     mVelY = 0.0f;
+    health= 100; // Reset health to initial value
 }
+
+SDL_Rect Enemy::getBoundingBox() const
+{
+    return {static_cast<int>(mPosX), static_cast<int>(mPosY), ENEMY_WIDTH, ENEMY_HEIGHT};
+}
+
+
+
 // Render the enemy using its texture
 void Enemy::render()
 {
     this->mgEnemyTexture.render(static_cast<int>(mPosX), static_cast<int>(mPosY));
 }
 // Getters for position
-int Enemy::getPosX()
+float Enemy::getPosX() const
 {
     return mPosX;
 }
-int Enemy::getPosY()
+float Enemy::getPosY() const
 {
     return mPosY;
 }

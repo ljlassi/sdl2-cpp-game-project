@@ -21,6 +21,9 @@ Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
     mLastFireTime = 0;
 
     gBulletTexture = gBulletTexture; // Initialize bullet texture
+
+    // Initialize health
+    health = 100; // Set initial health
 }
 
 float Player::getPosX() const
@@ -36,6 +39,21 @@ float Player::getPosY() const
 int Player::getHealth() const
 {
     return health;
+}
+
+void Player::takeDamage(int amount)
+{
+    health -= amount;
+    if (health < 0)
+    {
+        health = 0;
+    }
+    // Potentially add game over logic here or in main loop if health is 0
+}
+
+SDL_Rect Player::getBoundingBox() const
+{
+    return {static_cast<int>(mPosX), static_cast<int>(mPosY), PLAYER_WIDTH, PLAYER_HEIGHT};
 }
 
 void Player::move(float deltaTime) // Added deltaTime parameter
@@ -159,4 +177,9 @@ void Player::updateBullets(float deltaTime) // Added deltaTime parameter
             mBullets[i].render();
         }
     }
+}
+
+std::vector<Bullet>& Player::getBullets()
+{
+    return mBullets;
 }

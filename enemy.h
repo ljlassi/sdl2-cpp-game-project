@@ -20,8 +20,8 @@ public:
 
     void spawn(int x, int y);
 
-    int getPosX();
-    int getPosY();
+    float getPosX() const;
+    float getPosY() const;
     void render();
     int getAngle(); // Get the current angle of the enemy
     int getVelX();
@@ -29,6 +29,7 @@ public:
     int getHeight();
     int getWidth();
     int getAttackPower(); // Get the attack power of the enemy
+    SDL_Rect getBoundingBox() const; // New: Get enemy's bounding box
 
 private:
     int health; // Health of the enemy

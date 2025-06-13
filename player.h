@@ -43,6 +43,9 @@ class Player
 		float getPosX() const;
         float getPosY() const;
 		int getHealth() const;
+		void takeDamage(int amount); // New: Player takes damage
+        SDL_Rect getBoundingBox() const; // New: Get player's bounding box
+		std::vector<Bullet>& getBullets(); // New getter for bullets
 
     private:
 		//The X and Y offsets of the player
