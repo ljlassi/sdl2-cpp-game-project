@@ -2,9 +2,10 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
-#include "player.cpp"
 #include "stexture.cpp"
 #define STEXTURE_INCLUDED
+#include "player.cpp"
+#define PLAYER_INCLUDED
 #include "bullet.cpp"
 #define BULLET_INCLUDED
 #ifndef COMMON_INCLUDED
@@ -12,7 +13,8 @@
 #include "common.h"
 #endif
 #include "stimer.cpp"
-#define STIMER_INCLUDED
+#include "enemy.cpp"
+#define ENEMY_INCLUDED
 
 
 //Starts up SDL and creates window

@@ -1,4 +1,7 @@
+#ifndef BULLET_INCLUDED
+#define BULLET_INCLUDED
 #include "bullet.h"
+#endif
 #include <cmath>
 
 Bullet::Bullet(int x, int y, double angle, STexture& texture)

@@ -1,3 +1,6 @@
+#ifndef STIMER_H
+#define STIMER_H
+
 #include <SDL.h>
 
 class STimer
@@ -30,3 +33,5 @@ class STimer
 		bool mPaused;
 		bool mStarted;
 };
+
+#endif

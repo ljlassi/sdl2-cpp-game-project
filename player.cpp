@@ -1,4 +1,7 @@
+#ifndef PLAYER_INCLUDED
+#define PLAYER_INCLUDED
 #include "player.h"
+#endif
 #include <cmath>
 
 Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)

@@ -1,17 +1,7 @@
 #ifndef BULLET_H
 #define BULLET_H
-
-#include <SDL.h>
-
-#ifndef COMMON_INCLUDED
-#define COMMON_INCLUDED
 #include "common.h"
-#endif
-
-#ifndef STEXTURE_INCLUDED
-#define STEXTURE_INCLUDED
 #include "stexture.h"
-#endif
 
 class Bullet {
 public:

@@ -1,3 +1,6 @@
+#ifndef STEXTURE_H
+#define STEXTURE_H
+
 #include <string>
 #include <SDL.h>
 #include <SDL_image.h>
@@ -46,3 +49,5 @@ class STexture
 		int mWidth;
 		int mHeight;
 };
+
+#endif

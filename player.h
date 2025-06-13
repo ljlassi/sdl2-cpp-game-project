@@ -1,18 +1,10 @@
+#ifndef PLAYER_H
+#define PLAYER_H
 #include <SDL.h>
-#ifndef COMMON_INCLUDED
-#define COMMON_INCLUDED
 #include "common.h"
-#endif
 #include <vector>
-#ifndef BULLET_INCLUDED
-#define BULLET_INCLUDED
 #include "bullet.h"
-#endif
-
-#ifndef STEXTURE_INCLUDED
-#define STEXTURE_INCLUDED
 #include "stexture.h"
-#endif
 
 
 class Player
@@ -69,3 +61,4 @@ class Player
         // Vector to store active bullets
         std::vector<Bullet> mBullets;
 };
+#endif
