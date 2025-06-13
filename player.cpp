@@ -1,8 +1,8 @@
 #include "player.h"
 #include <cmath>
 
-Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
-    : gPlayerTexture(gPlayerTexture), gBulletTexture(gBulletTexture)
+Player::Player(STexture & mPlayerTexture, STexture & mBulletTexture)
+    : mPlayerTexture(mPlayerTexture), mBulletTexture(mBulletTexture)
 {
     //Initialize the offsets
     // mPosX = 320; // Center of the screen
@@ -20,7 +20,7 @@ Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
 
     mLastFireTime = 0;
 
-    gBulletTexture = gBulletTexture; // Initialize bullet texture
+    mBulletTexture = mBulletTexture; // Initialize bullet texture
 
     // Initialize health
     health = 100; // Set initial health
@@ -98,7 +98,7 @@ void Player::move(float deltaTime) // Added deltaTime parameter
 void Player::render()
 {
     //Show the player
-	gPlayerTexture.render( mPosX, mPosY, nullptr, mRot, nullptr, SDL_FLIP_NONE );
+	mPlayerTexture.render( mPosX, mPosY, nullptr, mRot, nullptr, SDL_FLIP_NONE );
 
     // Optionally, you can render a rectangle around the player for debugging
     // SDL_SetRenderDrawColor(gRenderer, 255, 0, 0, 255);
@@ -151,7 +151,7 @@ void Player::fireBullet()
         int bulletY = mPosY + PLAYER_HEIGHT / 2;
 
         // Create a new bullet and add it to the vector using push_back instead of emplace_back
-        Bullet newBullet(bulletX, bulletY, mRot, gBulletTexture);
+        Bullet newBullet(bulletX, bulletY, mRot, mBulletTexture);
         mBullets.push_back(newBullet);
         
         // Update last fire time

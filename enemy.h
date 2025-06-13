@@ -40,7 +40,7 @@ private:
     //The velocity of the enemy
     float mVelX, mVelY;
 
-    STexture& mgEnemyTexture; // Reference to the enemy texture
+    STexture& mEnemyTexture; // Reference to the enemy texture
 
 };
 

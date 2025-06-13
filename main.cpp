@@ -6,7 +6,6 @@
 #include "player.cpp"
 #include "bullet.cpp"
 #include "common.cpp"
-#include "stimer.cpp"
 #include "enemy.cpp"
 
 
@@ -56,8 +55,8 @@ bool init()
 		else
 		{
 			//Create vsynced renderer for window
-			gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-			if( gRenderer == NULL )
+			mRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+			if( mRenderer == NULL )
 			{
 				printf( "Renderer could not be created! SDL Error: %s\n", SDL_GetError() );
 				success = false;
@@ -65,7 +64,7 @@ bool init()
 			else
 			{
 				//Initialize renderer color
-				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
 				//Initialize PNG loading
 				int imgFlags = IMG_INIT_PNG;
@@ -117,10 +116,10 @@ void close()
 	gEnemyTexture.free();
 
 	//Destroy window	
-	SDL_DestroyRenderer( gRenderer );
+	SDL_DestroyRenderer( mRenderer );
 	SDL_DestroyWindow( gWindow );
 	gWindow = NULL;
-	gRenderer = NULL;
+	mRenderer = NULL;
 
 	//Quit SDL subsystems
 	IMG_Quit();
@@ -227,8 +226,8 @@ int main( int argc, char* args[] )
 
 
 				//Clear screen
-				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-				SDL_RenderClear( gRenderer );
+				SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				SDL_RenderClear( mRenderer );
 
 				//Render objects
                 if (player.getHealth() > 0) { // Only render player if alive
@@ -247,7 +246,7 @@ int main( int argc, char* args[] )
 				enemy.move(deltaTime, player.getPosX(), player.getPosY());
 
 				//Update screen
-				SDL_RenderPresent( gRenderer );
+				SDL_RenderPresent( mRenderer );
 
 				if (player.getHealth() <= 0) {
                      // Optional: Add a delay or specific game over screen before quitting

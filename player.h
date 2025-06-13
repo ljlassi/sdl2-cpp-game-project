@@ -23,7 +23,7 @@ class Player
         static const Uint32 FIRE_COOLDOWN = 300; // 300ms between shots
 
 		//Initializes the variables
-		Player(STexture & gPlayerTexture, STexture & gBulletTexture);
+		Player(STexture & mPlayerTexture, STexture & mBulletTexture);
 
 		//Takes key presses and adjusts the player's velocity
 		void handleEvent( SDL_Event& e );
@@ -60,8 +60,8 @@ class Player
 
 		int health;
 
-		STexture &gPlayerTexture;
-        STexture &gBulletTexture;
+		STexture &mPlayerTexture;
+        STexture &mBulletTexture;
 
         // Cooldown timer for firing bullets (prevents firing too many bullets at once)
         Uint32 mLastFireTime;

@@ -3,7 +3,7 @@
 
 Enemy::Enemy(int health, int attackPower, STexture& enemyTexture)
     : mPosX(0.0f), mPosY(0.0f), mVelX(0.0f), mVelY(0.0f),
-      health(health), attackPower(attackPower), mgEnemyTexture(enemyTexture)
+      health(health), attackPower(attackPower), mEnemyTexture(enemyTexture)
 {
 
 }
@@ -73,7 +73,7 @@ SDL_Rect Enemy::getBoundingBox() const
 // Render the enemy using its texture
 void Enemy::render()
 {
-    this->mgEnemyTexture.render(static_cast<int>(mPosX), static_cast<int>(mPosY));
+    this->mEnemyTexture.render(static_cast<int>(mPosX), static_cast<int>(mPosY));
 }
 // Getters for position
 float Enemy::getPosX() const
