@@ -33,6 +33,11 @@ float Player::getPosY() const
     return mPosY;
 }
 
+int Player::getHealth() const
+{
+    return health;
+}
+
 void Player::move(float deltaTime) // Added deltaTime parameter
 {
     //Update rotation based on rotation speed and time

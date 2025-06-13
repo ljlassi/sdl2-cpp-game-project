@@ -42,6 +42,7 @@ class Player
 
 		float getPosX() const;
         float getPosY() const;
+		int getHealth() const;
 
     private:
 		//The X and Y offsets of the player
@@ -53,6 +54,8 @@ class Player
 		double mRot; // Rotation angle of the player
 
 		double mRotSpeed; // Current speed of rotation
+
+		int health;
 
 		STexture &gPlayerTexture;
         STexture &gBulletTexture;
