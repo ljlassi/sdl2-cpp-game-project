@@ -40,12 +40,15 @@ class Player
         // Update and render all bullets
         void updateBullets(float deltaTime);
 
+		float getPosX() const;
+        float getPosY() const;
+
     private:
 		//The X and Y offsets of the player
-		int mPosX, mPosY;
+		float mPosX, mPosY;
 
 		//The velocity of the player
-		int mVelX, mVelY;
+		float mVelX, mVelY;
 
 		double mRot; // Rotation angle of the player
 

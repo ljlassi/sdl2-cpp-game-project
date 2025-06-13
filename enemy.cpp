@@ -1,15 +1,11 @@
-#ifndef ENEMY_INCLUDED
-#define ENEMY_INCLUDED
 #include "enemy.h"
-#endif
 #include <cmath>
-#include "stexture.h"
-#include "common.h"
 
-Enemy::Enemy(int health, int attackPower)
-    : health(health), mPosX(0), mPosY(0), mVelX(0), mVelY(0), angle(0)
+Enemy::Enemy(int health, int attackPower, STexture& enemyTexture)
+    : mPosX(0.0f), mPosY(0.0f), mVelX(0.0f), mVelY(0.0f),
+      health(health), attackPower(attackPower), mgEnemyTexture(enemyTexture)
 {
-    // Initialize enemy position and velocity
+
 }
 void Enemy::takeDamage(int damage)
 {
@@ -22,13 +18,29 @@ int Enemy::getHealth()
 {
     return health;
 }
-void Enemy::move(float deltaTime)
+void Enemy::move(float deltaTime, float playerX, float playerY)
 {
+    // Calculate direction vector towards the player
+    float dirX = playerX - mPosX;
+    float dirY = playerY - mPosY;
+
+    // Calculate distance to player
+    // Add a small epsilon to prevent division by zero if distance is extremely small
+    float distance = std::sqrt(dirX * dirX + dirY * dirY) + 0.0001f;
+
+    // Normalize the direction vector
+    float normX = dirX / distance;
+    float normY = dirY / distance;
+
+    // Set velocity towards the player
+    mVelX = normX * ENEMY_SPEED;
+    mVelY = normY * ENEMY_SPEED;
+
     // Update position based on velocity and time
     mPosX += mVelX * deltaTime;
     mPosY += mVelY * deltaTime;
 
-    // Clamp position to screen bounds
+    // Clamp position to screen bounds (optional, or handle collision differently)
     if (mPosX < 0) {
         mPosX = 0;
     } else if (mPosX + ENEMY_WIDTH > SCREEN_WIDTH) {
@@ -43,21 +55,16 @@ void Enemy::move(float deltaTime)
 }
 void Enemy::spawn(int x, int y)
 {
-    mPosX = x;
-    mPosY = y;
-    // Reset velocity
-    mVelX = 0;
-    mVelY = 0;
-// Set initial angle for movement
-    angle = 0; // Default angle, can be set to any value based on game logic
-// Set velocity based on angle
-    mVelX = static_cast<int>(cos(angle * M_PI / 180.0) * 100); // 100 is a speed factor
-    mVelY = static_cast<int>(sin(angle * M_PI / 180.0) * 100); // 100 is a speed factor
+    mPosX = static_cast<float>(x);
+    mPosY = static_cast<float>(y);
+    // Reset velocity; 'move' will calculate it based on player position
+    mVelX = 0.0f;
+    mVelY = 0.0f;
 }
 // Render the enemy using its texture
-void Enemy::render(STexture& enemyTexture)
+void Enemy::render()
 {
-    enemyTexture.render(mPosX, mPosY);
+    this->mgEnemyTexture.render(static_cast<int>(mPosX), static_cast<int>(mPosY));
 }
 // Getters for position
 int Enemy::getPosX()
@@ -85,11 +92,6 @@ int Enemy::getVelX()
 int Enemy::getVelY()
 {
     return mVelY;
-}
-// Getters for angle
-int Enemy::getAngle()
-{
-    return angle;
 }
 int Enemy::getAttackPower()
 {

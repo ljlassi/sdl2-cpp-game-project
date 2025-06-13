@@ -1,7 +1,4 @@
-#ifndef PLAYER_INCLUDED
-#define PLAYER_INCLUDED
 #include "player.h"
-#endif
 #include <cmath>
 
 Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
@@ -15,8 +12,8 @@ Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
     mPosY = SCREEN_HEIGHT / 2.0f;
 
     //Initialize the velocity
-    mVelX = 0;
-    mVelY = 0;
+    mVelX = 0.0;
+    mVelY = 0.0;
 
     mRot = 0.0; // Initialize rotation angle
     mRotSpeed = 0.0; // Initialize rotation speed
@@ -24,6 +21,16 @@ Player::Player(STexture & gPlayerTexture, STexture & gBulletTexture)
     mLastFireTime = 0;
 
     gBulletTexture = gBulletTexture; // Initialize bullet texture
+}
+
+float Player::getPosX() const
+{
+    return mPosX;
+}
+
+float Player::getPosY() const
+{
+    return mPosY;
 }
 
 void Player::move(float deltaTime) // Added deltaTime parameter

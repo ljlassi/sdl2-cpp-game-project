@@ -1,7 +1,4 @@
-#ifndef STEXTURE_INCLUDED
-#define STEXTURE_INCLUDED
 #include "stexture.h"
-#endif
 
 //STexture gPlayerTexture;
 SDL_Renderer* gRenderer = NULL;

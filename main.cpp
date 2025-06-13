@@ -24,6 +24,7 @@ SDL_Window* gWindow = NULL;
 
 STexture gPlayerTexture;
 STexture gBulletTexture;  // Add bullet texture
+STexture gEnemyTexture;  // Add enemy texture
 
 
 bool init()
@@ -46,7 +47,7 @@ bool init()
 		}
 
 		//Create window
-		gWindow = SDL_CreateWindow( "SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
+		gWindow = SDL_CreateWindow( "Shooter Game Prototype", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
 		if( gWindow == NULL )
 		{
 			printf( "Window could not be created! SDL Error: %s\n", SDL_GetError() );
@@ -99,6 +100,12 @@ bool loadMedia()
 		success = false;
 	}
 
+	if( !gEnemyTexture.loadFromFile( "/img/enemy_rectangle.png" ) )
+	{
+		printf( "Failed to load enemy texture!\n" );
+		success = false;
+	}
+
 	return success;
 }
 
@@ -107,6 +114,7 @@ void close()
 	//Free loaded images
 	gPlayerTexture.free();
 	gBulletTexture.free();
+	gEnemyTexture.free();
 
 	//Destroy window	
 	SDL_DestroyRenderer( gRenderer );
@@ -143,6 +151,9 @@ int main( int argc, char* args[] )
 
 			//The player that will be moving around on the screen
 			Player player = Player(gPlayerTexture, gBulletTexture);
+
+			Enemy enemy = Enemy(100, 100, gEnemyTexture); // Create an enemy at position (100, 100)
+			enemy.spawn(100, 100); // Spawn the enemy at its initial position
 
 			//Time management for delta time calculation
             Uint32 lastFrameTime = SDL_GetTicks();
@@ -187,6 +198,10 @@ int main( int argc, char* args[] )
 				
 				// Update and render bullets
 				player.updateBullets(deltaTime);
+
+				enemy.render(); // Render the enemy
+				// Move the enemy
+				enemy.move(deltaTime, player.getPosX(), player.getPosY());
 
 				//Update screen
 				SDL_RenderPresent( gRenderer );
