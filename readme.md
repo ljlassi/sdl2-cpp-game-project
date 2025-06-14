@@ -12,8 +12,15 @@ Please first contact me if you intend to utilize this code elsewhere. More info 
 
 ### Compilation instructions
 
-Make sure you have the SDL2 and SDL2_Image libraries properly set up if you intend to compile this. I use the following command for compilation (I might make a makefile later on):
+Make sure you have the SDL2 and SDL2_Image libraries properly set up if you intend to compile this. I finally made a makefile so for compilation you can just run:
 
 ```
-g++ -o main main.cpp `sdl2-config --cflags --libs` -lSDL2 -lSDL2_image
+make
 ```
+Run `make` in the project's main folder. The game will be compiled into a single binary named `shooter01` in the `build` folder. If you want to clear/remove the build, you can run:
+
+```
+make clean
+```
+
+Which will delete the build folder.
