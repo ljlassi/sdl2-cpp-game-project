@@ -6,7 +6,6 @@
 #include "bullet.h"
 #include "stexture.h"
 
-
 class Player
 {
     public:

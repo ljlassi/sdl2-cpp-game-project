@@ -1,5 +1,5 @@
-#include "bullet.h"
 #include <cmath>
+#include "bullet.h"
 
 Bullet::Bullet(int x, int y, double angle, STexture& texture)
     : mPosX(static_cast<float>(x)), mPosY(static_cast<float>(y)), mAngle(angle), gBulletTexture(texture)

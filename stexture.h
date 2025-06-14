@@ -15,12 +15,7 @@ class STexture
 		~STexture();
 
 		//Loads image at specified path
-		bool loadFromFile( std::string path );
-		
-		#if defined(SDL_TTF_MAJOR_VERSION)
-		//Creates image from font string
-		bool loadFromRenderedText( std::string textureText, SDL_Color textColor );
-		#endif
+		bool loadFromFile( std::string path, SDL_Renderer* renderer );
 
 		//Deallocates texture
 		void free();

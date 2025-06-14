@@ -1,10 +1,15 @@
+#include <SDL.h>
+#include <SDL_image.h>
+#include <stdio.h>
+#include <string>
 #include "stexture.h"
-
 //STexture gPlayerTexture;
 SDL_Renderer* mRenderer = NULL;
 
-bool STexture::loadFromFile( std::string path )
+bool STexture::loadFromFile( std::string path, SDL_Renderer*  renderer)
 {
+
+	mRenderer = renderer; // Set the renderer for this texture
 	//Get rid of preexisting texture
 	free();
 

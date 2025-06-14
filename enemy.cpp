@@ -1,5 +1,5 @@
-#include "enemy.h"
 #include <cmath>
+#include "enemy.h"
 
 Enemy::Enemy(int health, int attackPower, STexture& enemyTexture)
     : mPosX(0.0f), mPosY(0.0f), mVelX(0.0f), mVelY(0.0f),

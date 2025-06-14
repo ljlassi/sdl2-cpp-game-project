@@ -2,11 +2,11 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include <string>
-#include "stexture.cpp"
-#include "player.cpp"
-#include "bullet.cpp"
-#include "common.cpp"
-#include "enemy.cpp"
+#include "stexture.h"
+#include "player.h"
+#include "bullet.h"
+#include "common.h"
+#include "enemy.h"
 
 
 bool initGame();
@@ -20,6 +20,7 @@ SDL_Window* gWindow = NULL;
 STexture gPlayerTexture;
 STexture gBulletTexture;  // Add bullet texture
 STexture gEnemyTexture;  // Add enemy texture
+SDL_Renderer* gRenderer = NULL;
 
 
 bool initGame()
@@ -51,8 +52,8 @@ bool initGame()
 		else
 		{
 			// Set Vsync on
-			mRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
-			if( mRenderer == NULL )
+			gRenderer = SDL_CreateRenderer( gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC );
+			if( gRenderer == NULL )
 			{
 				printf( "Renderer cannot be created! SDL Error: %s\n", SDL_GetError() );
 				success = false;
@@ -60,7 +61,7 @@ bool initGame()
 			else
 			{
 				//Initialize colors for renderer
-				SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
 
 				//Initialize PNG loading
 				int imgFlags = IMG_INIT_PNG;
@@ -82,21 +83,21 @@ bool loadGameMedia()
 	bool success = true;
 
 	// Load player texture
-	if( !gPlayerTexture.loadFromFile( "/img/player.png" ) )
+	if( !gPlayerTexture.loadFromFile( "../img/player.png", gRenderer ) )
 	{
 		printf( "Failed to load player texture!\n" );
 		success = false;
 	}
 
 	//Load bullet texture
-	if( !gBulletTexture.loadFromFile( "/img/shot.png" ) )
+	if( !gBulletTexture.loadFromFile( "../img/shot.png", gRenderer  ) )
 	{
 		printf( "Failed to load bullet texture!\n" );
 		success = false;
 	}
 
 	// Load enemy texture
-	if( !gEnemyTexture.loadFromFile( "/img/enemy_rectangle.png" ) )
+	if( !gEnemyTexture.loadFromFile( "../img/enemy_rectangle.png", gRenderer ) )
 	{
 		printf( "Failed to load enemy texture!\n" );
 		success = false;
@@ -113,15 +114,46 @@ void closeGame()
 	gEnemyTexture.free();
 
 	//Destroy the window
-	SDL_DestroyRenderer( mRenderer );
+	SDL_DestroyRenderer( gRenderer );
 	SDL_DestroyWindow( gWindow );
 	gWindow = NULL;
-	mRenderer = NULL;
+	gRenderer = NULL;
 
 	// Quit all used SDL subsystems
 	IMG_Quit();
 	SDL_Quit();
 }
+
+inline bool checkCollision(SDL_Rect a, SDL_Rect b)
+{
+    // The sides of the rectangles
+    int leftA, leftB;
+    int rightA, rightB;
+    int topA, topB;
+    int bottomA, bottomB;
+
+    // Calculate the sides of rect A
+    leftA = a.x;
+    rightA = a.x + a.w;
+    topA = a.y;
+    bottomA = a.y + a.h;
+
+    // Calculate the sides of rect B
+    leftB = b.x;
+    rightB = b.x + b.w;
+    topB = b.y;
+    bottomB = b.y + b.h;
+
+    // If any of the sides from A are outside of B
+    if (bottomA <= topB) { return false; }
+    if (topA >= bottomB) { return false; }
+    if (rightA <= leftB) { return false; }
+    if (leftA >= rightB) { return false; }
+
+    // If none of the sides from A are outside B
+    return true;
+}
+
 
 int main( int argc, char* args[] )
 {
@@ -222,8 +254,8 @@ int main( int argc, char* args[] )
 
 
 				//Clear the screen
-				SDL_SetRenderDrawColor( mRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
-				SDL_RenderClear( mRenderer );
+				SDL_SetRenderDrawColor( gRenderer, 0xFF, 0xFF, 0xFF, 0xFF );
+				SDL_RenderClear( gRenderer );
 
 				//Render the actual objects
                 if (player.getHealth() > 0) { // Only render player if alive
@@ -240,7 +272,7 @@ int main( int argc, char* args[] )
 				enemy.move(deltaTime, player.getPosX(), player.getPosY());
 
 				//Update the screen
-				SDL_RenderPresent( mRenderer );
+				SDL_RenderPresent( gRenderer );
 
 				if (player.getHealth() <= 0) {
                     SDL_Delay(2000); // Wait 2 seconds

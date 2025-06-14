@@ -1,5 +1,8 @@
-#include "player.h"
 #include <cmath>
+#include "player.h"
+#include "bullet.h"
+#include "common.h"
+#include "enemy.h"
 
 Player::Player(STexture & mPlayerTexture, STexture & mBulletTexture)
     : mPlayerTexture(mPlayerTexture), mBulletTexture(mBulletTexture)
